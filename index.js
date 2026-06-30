@@ -284,6 +284,13 @@ var features = {};
 
 paper.view.autoUpdate = false;
 
+// Clipper "cold-start" warm-up: the very first Clipper boolean op silently
+// returns an empty result if it runs before paper.js has yielded/rendered once.
+// Force one update + microtask yield here so the first real boolean op (the
+// bottom layer's frame) isn't the cold one, otherwise that layer renders empty.
+paper.view.update();
+await new Promise(resolve => setTimeout(resolve, 0));
+
 for (z = 0; z < stacks; z++) {
     pz=z*prange;
     
